@@ -231,7 +231,7 @@ a:hover {
     color: #ffc18c;
 }
 
-/* Floating Halloween ghost */
+/* Floating Halloween ghost
 .halloween-ghost {
     position: absolute;
     top: 35%;
@@ -251,7 +251,7 @@ a:hover {
     50% {
         transform: translateY(-20px);
     }
-}
+} */
 
 /* Disable movement for users who prefer reduced motiion*/
 @media (prefers-reduced-motion: reduce) {
@@ -261,7 +261,7 @@ a:hover {
 }
 
 /* Glowing Halloween Create Account button */
-#registerButton {
+#registerButton, #loginButton {
     box-shadow:
         0 0 8px 3px rgba(255, 190, 70, 1),
         0 0 25px 8px rgba(255, 120, 0, 0.85),
@@ -288,7 +288,7 @@ a:hover {
 
 /* Disable animation when reduced motion is preferred */
 @media (prefers-reduced-motion: reduce) {
-    #registerButton {
+    #registerButton, #loginButton {
         animation: none;
     }
 }
@@ -637,5 +637,84 @@ a:hover {
             blur(10px)
             drop-shadow(0 0 8px rgba(0, 255, 0, 0.7))
             drop-shadow(0 0 15px rgba(0, 255, 0, 0.45));
+    }
+}
+
+/* Responsive Halloween layout */
+@media (max-width: 992px) {
+
+    .pumpkin-container-left {
+        left: -5%;
+    }
+
+    .pumpkin-container-right {
+        right: 2%;
+    }
+
+    .pumpkin-container {
+        transform: scale(0.73);
+    }
+
+    .floating-ghost {
+        width: 120px;
+    }
+
+    .ghost-left {
+        left: -2%;
+    }
+
+    .ghost-right {
+        right: -2%;
+    }
+}
+
+@media (max-width: 700px) {
+    .pumpkin-container {
+        display: none;
+    }
+}
+
+/* Floating image ghosts */
+.floating-ghost {
+    position: absolute;
+    width: 170px;
+    height: auto;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.ghost-left {
+    left: 18%;
+    top: 20%;
+    animation: ghostFloatLeft 9s ease-in-out infinite;
+}
+
+.ghost-right {
+    right: 18%;
+    top: 20%;
+    animation: ghostFloatRight 9s ease-in-out infinite;
+}
+
+@keyframes ghostFloatLeft {
+    0%, 100% {
+        transform: translateY(55px);
+        opacity: 0;
+    }
+
+    50% {
+        transform: translateY(-55px);
+        opacity: 0.55;
+    }
+}
+
+@keyframes ghostFloatRight {
+    0%, 100% {
+        transform: translateY(-55px);
+        opacity: 0.55;
+    }
+
+    50% {
+        transform: translateY(55px);
+        opacity: 0;
     }
 }
