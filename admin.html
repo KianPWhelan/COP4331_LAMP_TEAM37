@@ -45,9 +45,14 @@
                                 Users
                             </h2>
 
-                            <button class="btn btn-outline-light btn-sm" onclick="loadUsers()">
-                                Refresh
-                            </button>
+                            <div class="d-flex align-items-center gap-2">
+                                <button class="btn btn-outline-light btn-sm" onclick="loadUsers()">
+                                    Refresh
+                                </button>
+                                <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="window.location.href='index.html'">
+                                    <i class="bi bi-box-arrow-right me-1"></i> Log Out
+                                </button>
+                            </div>
                         </div>
 
                         <div id="adminResult" class="mb-3 small"></div>
