@@ -6,7 +6,7 @@
     --app-font: 'Inter', system-ui, -apple-system, sans-serif;
     
     /* WCAG AA/AAA Compliant Palette Tokens */
-    --bg-dark: #090d16;
+    --bg-dark: #14101c;
     --bg-card: #0f172a;
     --bg-section: #1e293b;
     --bg-input: #1e293b;
@@ -22,13 +22,18 @@
     --color-info: #38bdf8;          /* 6.83:1 contrast on section */
     
     /* Button Gradients meeting >= 4.5:1 contrast against #ffffff text */
-    --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+    --primary-gradient: linear-gradient(135deg, #c65a16 0%, #9a3f0b 100%);
     --success-gradient: linear-gradient(135deg, #059669 0%, #047857 100%);
 }
 
 body {
     font-family: var(--app-font);
-    background: var(--bg-dark);
+    background: 
+        linear-gradient(
+            rgba(12, 7, 20, 0.20),
+            rgba(12, 7, 20, 0.35)
+        ),
+        url("../images/forest-background.jpg") center center / cover no-repeat;
     color: var(--text-primary);
     min-height: 100vh;
     position: relative;
@@ -41,12 +46,17 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 650px;
-    height: 650px;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, rgba(168, 85, 247, 0.06) 40%, transparent 70%);
-    z-index: -1;
+    width: 1100px;
+    height: 1100px;
+    background: radial-gradient(circle, rgba(198, 90, 22, 0.45) 0%, rgba(100, 45, 120, 0.25) 40%, transparent 70%);
+    z-index: 0;
     pointer-events: none;
-    filter: blur(50px);
+    filter: blur(60px);
+}
+
+main.container {
+    position: relative;
+    z-index: 1;
 }
 
 /* Typography & Titles */
@@ -90,17 +100,19 @@ body {
     justify-content: center;
     font-size: 1.25rem;
     color: #ffffff;
-    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+    box-shadow: 0 4px 14px rgba(198, 90, 22, 0.3);
 }
 
 /* Glassmorphism Cards */
 .glass-card {
-    background: rgba(15, 23, 42, 0.85) !important;
+    background: rgba(30, 22, 43, 0.92) !important;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 140, 50, 0.75) !important;
     border-radius: 1.25rem !important;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6) !important;
+    box-shadow: 0 0 35px rgba(255, 115, 25, 0.35),
+                0 0 100px rgba(255, 90, 20, 0.25),
+                0 25px 50px -12px rgba(0, 0, 0, 0.6) !important;
 }
 
 .section-card {
@@ -124,8 +136,8 @@ body {
 }
 
 .form-control:focus {
-    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.35) !important;
-    border-color: #818cf8 !important;
+    box-shadow: 0 0 0 3px rgba(198, 90, 22, 0.35) !important;
+    border-color: #e07020 !important;
 }
 
 .input-group-text {
@@ -149,8 +161,8 @@ body {
 
 .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(55, 48, 163, 0.6);
-    background: linear-gradient(135deg, #3730a3 0%, #312e81 100%) !important;
+    box-shadow: 0 6px 20px rgba(198, 90, 22, 0.5);
+    background: linear-gradient(135deg, #e07020 0%, #b84b10 100%) !important;
 }
 
 .btn-success {
@@ -208,4 +220,422 @@ body {
 
 #colorList {
     word-break: break-word;
+}
+
+/* Halloween-themed Links */
+a {
+    color: #ff9b50;
+}
+
+a:hover {
+    color: #ffc18c;
+}
+
+/* Floating Halloween ghost */
+.halloween-ghost {
+    position: absolute;
+    top: 35%;
+    left: 18%;
+    font-size: 4rem;
+    z-index: 1;
+    pointer-events: none;
+
+    animation: ghostFloat 4s ease-in-out infinite;
+}
+
+@keyframes ghostFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+/* Disable movement for users who prefer reduced motiion*/
+@media (prefers-reduced-motion: reduce) {
+    .halloween-ghost {
+        animation: none;
+    }
+}
+
+/* Glowing Halloween Create Account button */
+#registerButton {
+    box-shadow:
+        0 0 8px 3px rgba(255, 190, 70, 1),
+        0 0 25px 8px rgba(255, 120, 0, 0.85),
+        0 0 55px 15px rgba(255, 80, 0, 0.55),
+        0 0 90px 20px rgba(255, 60, 0, 0.25) !important;
+
+    animation: pumpkinFlicker 7s infinite;
+}
+
+/* Candle-like flicker */
+@keyframes pumpkinFlicker {
+    0%, 68%, 74%, 78%, 100% {
+        filter: brightness(1);
+    }
+
+    70%, 76% {
+        filter: brightness(0.75);
+    }
+
+    72% {
+        filter: brightness(1.25);
+    }
+}
+
+/* Disable animation when reduced motion is preferred */
+@media (prefers-reduced-motion: reduce) {
+    #registerButton {
+        animation: none;
+    }
+}
+
+/* Pulsing orange glow around the card */
+.glass-card {
+    animation: cardGlowPulse 4s ease-in-out infinite !important;
+}
+
+@keyframes cardGlowPulse {
+    0%, 100% {
+        filter: drop-shadow(0 0 15px rgba(255, 120, 20, 0.35));
+    }
+
+    50% {
+        filter: drop-shadow(0 0 65px rgba(255, 140, 30, 1));
+    }
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .glass-card {
+        animation: none;
+    }
+}
+
+/* Fog layers for background */
+.fog {
+    position: absolute;
+    top: 45%;
+    left: 0;
+    width: 100%;
+    height: 45vh;
+    pointer-events: none;
+    z-index: 0;
+
+    background:
+        radial-gradient(
+            ellipse 25% 18% at 15% 80%,
+            rgba(255, 255, 255, 0.60) 0%,
+            rgba(255, 255, 255, 0.35) 55%,
+            transparent 100%
+        ),
+        radial-gradient(
+            ellipse 35% 12% at 45% 45%,
+            rgba(255, 255, 255, 0.45) 0%,
+            rgba(255, 255, 255, 0.27) 55%,
+            transparent 100%
+        ),
+        radial-gradient(
+            ellipse 28% 22% at 80% 70%,
+            rgba(255, 255, 255, 0.55) 0%,
+            rgba(255, 255, 255, 0.33) 55%,
+            transparent 100%
+        ),
+        radial-gradient(
+            ellipse 20% 15% at 65% 20%,
+            rgba(255, 255, 255, 0.40) 0%,
+             rgba(255, 255, 255, 0.24) 55%,
+            transparent 100%
+        );
+
+    -webkit-mask-image: radial-gradient(
+        ellipse,
+        black 30%,
+        transparent 75%
+    );
+
+    mask-image: radial-gradient(
+        ellipse,
+        black 30%,
+        transparent 75%
+    );
+}
+
+/* First fog layer */
+.fog-one {
+    animation: fogDrift 20s linear infinite alternate;
+}
+
+/* Second fog layer*/
+.fog-two {
+    opacity: 0.6;
+    animation: fogDrift 15s linear infinite alternate-reverse;
+}
+
+/* Upper fog layer */
+.fog-high {
+    top: 5%;
+    left: 0;
+    width:100%;
+    height: 45%;
+    opacity: 1;
+
+    background:
+        radial-gradient(
+            ellipse 28% 30% at 15% 65%,
+            rgba(255, 255, 255, 0.85) 0%,
+            rgba(255, 255, 255, 0.50) 55%,
+            transparent 100%
+        ),
+        radial-gradient(
+            ellipse 35% 25% at 45% 35%,
+            rgba(255, 255, 255, 0.70) 0%,
+            rgba(255, 255, 255, 0.42) 55%,
+            transparent 100%
+        ),
+        radial-gradient(
+            ellipse 25% 35% at 80% 70%,
+            rgba(255, 255, 255, 0.80) 0%,
+            rgba(255, 255, 255, 0.48) 55%,
+            transparent 100%
+        ),
+        radial-gradient(
+            ellipse 20% 25% at 65% 15%,
+            rgba(255, 255, 255, 0.65) 0%,
+            rgba(255, 255, 255, 0.39) 55%,
+            transparent 100%
+        );
+
+    animation: fogHighDrift 18s ease-in-out infinite alternate;
+}
+
+/* Second upper fog layer */
+.fog-high-two {
+    opacity: 0.75;
+    animation: fogHighDrift 30s ease-in-out infinite alternate-reverse;
+    animation-delay: -20s;
+}
+
+@keyframes fogDrift {
+    0% {
+        transform: translate(-60%, 0) scale(0.9, 1);
+        opacity: 0.65;
+    }
+
+    25% {
+        transform: translate(-20%, -8%) scale(1.1, 1.2);
+        opacity: 0.9;
+    }
+
+    50% {
+        transform: translate(20%, 5%) scale(0.95, 0.85);
+        opacity: 0.7;
+    }
+
+    75% {
+        transform: translate(60%, -12%) scale(1.15, 1.1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(100%, 0) scale(0.9, 1);
+        opacity: 0.65;
+    }
+}
+
+@keyframes fogHighDrift {
+    0% {
+        transform: translate(-25%, 0) scale(0.9, 1);
+        opacity: 0.65;
+    }
+
+    25% {
+        transform: translate(-10%, 8%) scale(1.15, 0.85);
+        opacity: 1;
+    }
+
+    50% {
+        transform: translate(5%, -10%) scale(0.95, 1.2);
+        opacity: 0.75;
+    }
+
+    75% {
+        transform: translate(20%, 5%) scale(1.1, 0.9);
+        opacity: 0.95;
+    }
+
+    100% {
+        transform: translate(25%, -5%) scale(0.9, 1);
+        opacity: 0.65;
+    }
+}
+
+/* Disable fog movement for reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .fog-one,
+    .fog-two {
+        animation: none;
+    }
+}
+
+/* Halloween heading */
+.halloween-title {
+    color: #ffca85 !important;
+    text-shadow:
+        0 2px 5px rgba(0, 0, 0, 1),
+        0 0 15px rgba(255, 120, 20, 0.5);
+}
+
+/* Readable subtitle against bright fog */
+.halloween-subtitle {
+    color: #ff9b40 !important;
+    opacity: 1 !important;
+    text-shadow:
+        0 2px 4px #000,
+        0 0 12px #000,
+        0 0 20px rgba(0, 0, 0, 0.9);
+}
+
+.halloween-pumpkin {
+    position: absolute;
+    width: 300px;
+    height: auto;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.pumpkin-left {
+    z-index: 2;
+    transform:scaleX(-1);
+    animation: pumpkinGlowLeft 4s ease-in-out infinite;
+}
+
+.pumpkin-right {
+    z-index: 2;
+    animation: pumpkinGlowRight 4s ease-in-out infinite;
+}
+
+@keyframes pumpkinGlowLeft {
+    0% {
+        filter:
+            drop-shadow(0 0 6px rgba(255, 120, 20, 0.30))
+            drop-shadow(0 0 15px rgba(255, 80, 10, 0.15))
+            brightness(0.95);
+    }
+
+    50% {
+        filter:
+            drop-shadow(0 0 18px rgba(255, 140, 30, 0.85))
+            drop-shadow(0 0 35px rgba(255, 80, 10, 0.45))
+            brightness(1.10);
+    }
+
+    100% {
+        filter:
+            drop-shadow(0 0 6px rgba(255, 120, 20, 0.30))
+            drop-shadow(0 0 15px rgba(255, 80, 10, 0.15))
+            brightness(0.95);
+    }
+}
+
+.pumpkin-container {
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.pumpkin-container-left {
+    left: 4%;
+    bottom: 10%;
+}
+
+.pumpkin-container-right {
+    right: 12%;
+    bottom: 11%;
+}
+
+.pumpkin-eye-glow {
+    position: absolute;
+
+    width: 38px;
+    height: 20px;
+
+    background: rgba(0, 255, 0, 0.9);
+
+    border-radius: 50%;
+
+    filter: blur(8px);
+
+    z-index: 3;
+    pointer-events: none;
+    animation: greenPumpkinGlow 3.5s ease-in-out infinite;
+}
+
+.pumpkin-mouth-glow {
+    position: absolute;
+    width: 120px;
+    height: 30px;
+    left: 105px;
+    top: 160px;
+    background: rgba(0, 255, 0, 0.55);
+    border-radius: 50%;
+    filter: blur(8px);
+    z-index: 3;
+    pointer-events: none;
+    transform: rotate(-15deg);
+    animation: greenPumpkinGlow 3.5s ease-in-out infinite;
+}
+
+.eye-one {
+    left: 100px;
+    top: 112px;
+}
+
+.eye-two {
+    left: 160px;
+    top: 95px;
+}
+
+.right-eye-one {
+    left: 68px;
+    top: 75px;
+}
+
+.right-eye-two {
+    left: 160px;
+    top: 85px;
+}
+
+.right-nose {
+    left: 105px;
+    top: 125px;
+}
+
+.right-mouth {
+    left: 70px;
+    top: 175px;
+    width: 140px;
+    transform: rotate(0deg);
+}
+
+@keyframes greenPumpkinGlow {
+    0%, 100% {
+        opacity: 0.6;
+        filter: 
+            blur(8px)
+            drop-shadow(0 0 5px rgba(0, 255, 0, 0.5));
+    }
+
+    50% {
+        opacity: 0.9;
+        filter: 
+            blur(10px)
+            drop-shadow(0 0 8px rgba(0, 255, 0, 0.7))
+            drop-shadow(0 0 15px rgba(0, 255, 0, 0.45));
+    }
 }
