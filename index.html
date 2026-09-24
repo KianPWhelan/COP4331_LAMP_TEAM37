@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COP 4331 LAMP Stack Contacts App (Currently Colors)</title>
+    <title>Contacts Headquarters | Login</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,6 +22,38 @@
 </head>
 <body class="d-flex align-items-center justify-content-center min-vh-100 py-5">
     <div class="background-glow"></div>
+        <!-- Pumpkin images -->
+        <div class="pumpkin-container pumpkin-container-left" aria-hidden="true">
+
+            <div class="pumpkin-eye-glow eye-one"></div>
+            <div class="pumpkin-eye-glow eye-two"></div>
+            <div class="pumpkin-mouth-glow"></div>
+
+            <img src="images/pumpkin-left.png"
+                class="halloween-pumpkin pumpkin-left"
+                alt="">
+        </div>
+
+        <div class="pumpkin-container pumpkin-container-right" aria-hidden="true">
+
+            <div class="pumpkin-eye-glow right-eye-one"></div>
+            <div class="pumpkin-eye-glow right-eye-two"></div>
+            <div class="pumpkin-eye-glow right-nose"></div>
+            <div class="pumpkin-mouth-glow right-mouth"></div>
+
+            <img src="images/pumpkin-right.png"
+                class="halloween-pumpkin pumpkin-right"
+                alt="">
+        </div>
+
+        <!-- Fog -->
+        <div class="fog fog-one" aria-hidden="true"></div>
+        <div class="fog fog-two" aria-hidden="true"></div>
+        <div class="fog fog-high" aria-hidden="true"></div>
+        <div class="fog fog-high fog-high-two" aria-hidden="true"></div>
+
+        <div class="halloween-ghost" aria-hidden="true">👻</div>
+
     <main class="container">
         <div class="row justify-content-center">
             <div class="col-12 col-sm-10 col-md-8 col-lg-5">
@@ -29,16 +61,16 @@
                 <!-- Title Header -->
                 <div class="text-center mb-4">
                     <div class="app-icon-wrapper mb-3 mx-auto">
-                        <i class="bi bi-palette-fill"></i>
+                        <i class="bi bi-person-lines-fill"></i>
                     </div>
-                    <h1 id="title" class="fw-bold tracking-tight">Contacts Headquarters</h1>
-                    <p class="text-secondary-contrast small">Everyone, everywhere, all right here.</p>
+                    <h1 id="title" class="fw-bold tracking-tight halloween-title">Contacts Headquarters</h1>
+                    <p class="text-secondary-contrast small halloween-subtitle">Everyone, everywhere, all right here.</p>
                 </div>
 
                 <!-- Login Card -->
                 <div id="loginDiv" class="card glass-card shadow-lg border-0 p-4 p-sm-5">
                     <div class="card-body p-0">
-                        <span id="inner-title" class="d-block text-center fw-semibold text-uppercase tracking-wider mb-4 fs-5">Please Log In</span>
+                        <span id="inner-title" class="d-block text-center fw-semibold text-uppercase tracking-wider mb-4 fs-5">🎃 Please Log In</span>
                         
                         <form id="loginForm" onsubmit="event.preventDefault(); doLogin();" class="needs-validation">
                             <!-- Username Input Group -->
@@ -62,9 +94,46 @@
                             <!-- Login Button -->
                             <button type="submit" id="loginButton" class="buttons btn btn-primary w-100 py-3 fw-semibold rounded-3 shadow-sm d-flex align-items-center justify-content-center gap-2">
                                 <span>Sign In</span>
-                                <i class="bi bi-arrow-right"></i>
+                                <svg class="pumpkin-icon"
+                                    width="34"
+                                    height="34"
+                                    viewBox="0 0 64 64"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg">
+
+                                    <!-- Stem -->
+                                    <path d="M29 15 C29 9 33 6 39 7 L40 12 C36 12 35 14 35 17"
+                                        fill="#21151c"/>
+
+                                    <!-- Black pumpkin body -->
+                                    <path d="M32 18 C12 9 4 25 9 43 C13 58 24 59 32 55
+                                            C40 59 51 58 55 43 C60 25 52 9 32 18Z"
+                                        fill="#21151c"/>
+
+                                    <!-- Orange eyes -->
+                                    <path d="M18 34 L25 25 L28 36 Z" fill="#ff8c32"/>
+                                    <path d="M46 34 L39 25 L36 36 Z" fill="#ff8c32"/>
+
+                                    <!-- Orange nose -->
+                                    <path d="M32 35 L28 42 L36 42 Z" fill="#ff8c32"/>
+
+                                    <!-- Orange jagged smile -->
+                                    <path d="M17 44 L23 47 L27 43 L32 48 L37 43 L41 47
+                                            L47 44 C44 54 21 54 17 44Z"
+                                        fill="#ff8c32"/>
+                                </svg>
                             </button>
                         </form>
+
+                        <!-- Registration Link -->
+                        <div class="text-center mt-4">
+                            <p class="text-secondary-contrast small">
+                                Don't have an account?
+                                <a href="register.html" class="text-decoration-none fw-semibold">
+                                    Create an account
+                                </a>
+                            </p>
+                        </div>
 
                         <!-- Feedback Result Message -->
                         <div class="mt-3 text-center">
