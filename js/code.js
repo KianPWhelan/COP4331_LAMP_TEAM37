@@ -45,7 +45,7 @@ function doLogin() {
           role = jsonObject.role;
 
           saveCookie();
-          window.location.href = "color.html";
+          window.location.href = "contacts.html";
         } else {
           document.getElementById("loginResult").innerHTML =
             "<i class='bi bi-exclamation-circle-fill me-1'></i> Login failed";
@@ -62,18 +62,11 @@ function saveCookie() {
   let minutes = 20;
   let date = new Date();
   date.setTime(date.getTime() + minutes * 60 * 1000);
-  document.cookie =
-    "firstName=" +
-    encodeURIComponent(firstName) +
-    ",lastName=" +
-    encodeURIComponent(lastName) +
-    ",userId=" +
-    userId +
-    ",role=" +
-    encodeURIComponent(role) +
-    ";expires=" +
-    date.toGMTString() +
-    ";path=/";
+  const expires = ";expires=" + date.toUTCString() + ";path=/";
+  document.cookie = "firstName=" + encodeURIComponent(firstName) + expires;
+  document.cookie = "lastName=" + encodeURIComponent(lastName) + expires;
+  document.cookie = "userId=" + userId + expires;
+  document.cookie = "role=" + encodeURIComponent(role) + expires;
 }
 
 function readCookie() {
