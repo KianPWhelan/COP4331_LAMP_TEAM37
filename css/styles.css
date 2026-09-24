@@ -639,3 +639,30 @@ a:hover {
             drop-shadow(0 0 15px rgba(0, 255, 0, 0.45));
     }
 }
+
+/* Responsive Halloween layout */
+@media (max-width: 992px) {
+
+    .pumpkin-container-left {
+        left: -5%;
+    }
+
+    .pumpkin-container-right {
+        right: 2%;
+    }
+
+    .halloween-ghost {
+        left: 8%;
+    }
+
+    .pumpkin-container {
+        transform: scale(0.73);
+    }
+}
+
+@media (max-width: 700px) {
+    .pumpkin-container,
+    .halloween-ghost {
+        display: none;
+    }
+}
