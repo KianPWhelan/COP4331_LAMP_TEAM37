@@ -2,11 +2,12 @@ const urlBase = (typeof window !== 'undefined' && window.location && (window.loc
   ? '/api/index.php'
   : 'https://kianwcop4331.webhop.me/api/index.php';
 
-const loginUrlBase = urlBase;
+const loginUrlBase = '/api/login.php';
 
 let userId = 0;
 let firstName = "";
 let lastName = "";
+let role = "";
 
 function doLogin() {
   userId = 0;
@@ -41,6 +42,7 @@ function doLogin() {
 
           firstName = jsonObject.firstName;
           lastName = jsonObject.lastName;
+          role = jsonObject.role;
 
           saveCookie();
           window.location.href = "color.html";
@@ -67,6 +69,8 @@ function saveCookie() {
     encodeURIComponent(lastName) +
     ",userId=" +
     userId +
+    ",role=" +
+    encodeURIComponent(role) +
     ";expires=" +
     date.toGMTString() +
     ";path=/";
@@ -87,6 +91,8 @@ function readCookie() {
         lastName = decodeURIComponent(keyVal[1] || "");
       } else if (keyVal[0] === "userId") {
         userId = parseInt(keyVal[1].trim());
+      } else if (keyVal[0] === "role") {
+        role = decodeURIComponent(keyVal[1] || "");
       }
     }
   }
@@ -106,9 +112,11 @@ function doLogout() {
   userId = 0;
   firstName = "";
   lastName = "";
+  role = "";
   document.cookie = "firstName=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
   document.cookie = "lastName=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
   document.cookie = "userId=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+  document.cookie = "role=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
   window.location.href = "index.html";
 }
 
