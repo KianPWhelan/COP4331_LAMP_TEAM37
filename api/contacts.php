@@ -5,52 +5,48 @@ require_once __DIR__ . '/config/helpers.php';
 
 setCORSHeaders();
 
-if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    respond(405, ['error' => 'Method not allowed']);
-}
-
 $db = getDB();
 $userId = requireAuth();
-
-$id = isset($_GET['id']) ? (int) $_GET['id'] : null;
-$search = isset($_GET['q']) ? trim($_GET['q']) : null;
+$method = $_SERVER['REQUEST_METHOD'];
 
 
-// Get one contact by ID
-if ($id) {
+// GET - list/search contacts
+if ($method === 'GET') {
 
-    $stmt = $db->prepare(
-        'SELECT
-            ID AS id,
-            FirstName AS firstName,
-            LastName AS lastName,
-            `Email Address` AS email,
-            `Phone Number` AS phone
-         FROM Contacts
-         WHERE ID = :id
-         AND UserID = :uid
-         LIMIT 1'
-    );
+    $search = isset($_GET['q']) ? trim($_GET['q']) : '';
 
-    $stmt->execute([
-        ':id' => $id,
-        ':uid' => $userId
-    ]);
+    if ($search !== '') {
 
-    $contact = $stmt->fetch();
+        $like = '%' . $search . '%';
 
-    if (!$contact) {
-        respond(404, ['error' => 'Contact not found']);
+        $stmt = $db->prepare(
+            'SELECT
+                ID AS id,
+                FirstName AS firstName,
+                LastName AS lastName,
+                `Email Address` AS email,
+                `Phone Number` AS phone
+             FROM Contacts
+             WHERE UserID = :uid
+             AND (
+                FirstName LIKE :q
+                OR LastName LIKE :q
+                OR `Email Address` LIKE :q
+                OR `Phone Number` LIKE :q
+             )
+             ORDER BY LastName, FirstName'
+        );
+
+        $stmt->execute([
+            ':uid' => $userId,
+            ':q' => $like
+        ]);
+
+        respond(200, [
+            'contacts' => $stmt->fetchAll(),
+            'error' => ''
+        ]);
     }
-
-    respond(200, $contact);
-}
-
-
-// Search contacts
-if ($search !== null && $search !== '') {
-
-    $like = '%' . $search . '%';
 
     $stmt = $db->prepare(
         'SELECT
@@ -61,18 +57,11 @@ if ($search !== null && $search !== '') {
             `Phone Number` AS phone
          FROM Contacts
          WHERE UserID = :uid
-         AND (
-            FirstName LIKE :q
-            OR LastName LIKE :q
-            OR `Email Address` LIKE :q
-            OR `Phone Number` LIKE :q
-         )
          ORDER BY LastName, FirstName'
     );
 
     $stmt->execute([
-        ':uid' => $userId,
-        ':q' => $like
+        ':uid' => $userId
     ]);
 
     respond(200, [
@@ -82,24 +71,46 @@ if ($search !== null && $search !== '') {
 }
 
 
-// List all contacts for logged-in user
-$stmt = $db->prepare(
-    'SELECT
-        ID AS id,
-        FirstName AS firstName,
-        LastName AS lastName,
-        `Email Address` AS email,
-        `Phone Number` AS phone
-     FROM Contacts
-     WHERE UserID = :uid
-     ORDER BY LastName, FirstName'
-);
+// POST - add contact
+if ($method === 'POST') {
 
-$stmt->execute([
-    ':uid' => $userId
-]);
+    $body = getRequestBody();
 
-respond(200, [
-    'contacts' => $stmt->fetchAll(),
-    'error' => ''
+    $firstName = clean($body['firstName'] ?? '');
+    $lastName  = clean($body['lastName'] ?? '');
+    $email     = clean($body['email'] ?? '');
+    $phone     = clean($body['phone'] ?? '');
+
+    if (!$firstName || !$lastName || !$email || !$phone) {
+        respond(400, [
+            'error' => 'All fields are required'
+        ]);
+    }
+
+    $stmt = $db->prepare(
+        'INSERT INTO Contacts
+            (FirstName, LastName, `Email Address`, `Phone Number`, UserID)
+         VALUES
+            (:firstName, :lastName, :email, :phone, :uid)'
+    );
+
+    $stmt->execute([
+        ':firstName' => $firstName,
+        ':lastName' => $lastName,
+        ':email' => $email,
+        ':phone' => $phone,
+        ':uid' => $userId
+    ]);
+
+    respond(201, [
+        'message' => 'Contact created',
+        'id' => (int) $db->lastInsertId(),
+        'error' => ''
+    ]);
+}
+
+
+// Anything else
+respond(405, [
+    'error' => 'Method not allowed'
 ]);
