@@ -45,7 +45,11 @@ function doLogin() {
           role = jsonObject.role;
 
           saveCookie();
-          window.location.href = "contacts.html";
+          if (role === "Admin") {
+            window.location.href = "admin.html";
+          } else {
+            window.location.href = "contacts.html";
+          }
         } else {
           document.getElementById("loginResult").innerHTML =
             "<i class='bi bi-exclamation-circle-fill me-1'></i> Login failed";
