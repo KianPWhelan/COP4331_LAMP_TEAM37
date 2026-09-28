@@ -20,20 +20,36 @@ if (!$firstName || !$lastName || !$login || !$password) {
 
 $db = getDB();
 
+$stmt = $db->prepare('SELECT 1 FROM Users WHERE Login = :login LIMIT 1');
+$stmt->execute([':login' => $login]);
+
+if ($stmt->fetchColumn() !== false) {
+    respond(409, ['error' => 'Login already exists']);
+}
+
 $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-$stmt = $db->prepare(
-    'INSERT INTO Users (FirstName, LastName, Login, Password, Admin)
-     VALUES (:firstName, :lastName, :login, :password, :admin)'
-);
+try {
+    $stmt = $db->prepare(
+        'INSERT INTO Users (FirstName, LastName, Login, Password, Admin)
+         VALUES (:firstName, :lastName, :login, :password, :admin)'
+    );
 
-$stmt->execute([
-    ':firstName' => $firstName,
-    ':lastName'  => $lastName,
-    ':login'     => $login,
-    ':password'  => $passwordHash,
-    ':admin'     => 'Standard User'
-]);
+    $stmt->execute([
+        ':firstName' => $firstName,
+        ':lastName'  => $lastName,
+        ':login'     => $login,
+        ':password'  => $passwordHash,
+        ':admin'     => 'Standard User'
+    ]);
+} catch (PDOException $e) {
+
+    if ((int) ($e->errorInfo[1] ?? 0) === 1062) {
+        respond(409, ['error' => 'Login already exists']);
+    }
+
+    throw $e;
+}
 
 respond(201, [
     'message' => 'User registered successfully'
