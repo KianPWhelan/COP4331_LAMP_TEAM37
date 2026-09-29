@@ -110,6 +110,75 @@ if ($method === 'POST') {
 }
 
 
+// PUT / DELETE - check that the contact belongs to this user
+if ($method === 'PUT' || $method === 'DELETE') {
+    $contactId = filter_var($_GET['id'] ?? null, FILTER_VALIDATE_INT, [
+        'options' => ['min_range' => 1]
+    ]);
+
+    if ($contactId === false) {
+        respond(400, ['error' => 'A valid contact ID is required']);
+    }
+
+    $stmt = $db->prepare('SELECT ID FROM Contacts WHERE ID = :id AND UserID = :uid');
+    $stmt->execute([':id' => $contactId, ':uid' => $userId]);
+
+    if (!$stmt->fetch()) {
+        respond(404, ['error' => 'Contact not found']);
+    }
+}
+
+
+// PUT - update all contact fields
+if ($method === 'PUT') {
+    $body = getRequestBody();
+    $firstName = clean($body['firstName'] ?? '');
+    $lastName  = clean($body['lastName'] ?? '');
+    $email     = clean($body['email'] ?? '');
+    $phone     = clean($body['phone'] ?? '');
+
+    if (!is_string($firstName) || !is_string($lastName) ||
+        !is_string($email) || !is_string($phone)) {
+        respond(400, ['error' => 'Contact fields must be strings']);
+    }
+
+    if ($firstName === '' || $lastName === '' || $email === '' || $phone === '') {
+        respond(400, ['error' => 'All fields are required']);
+    }
+
+    $stmt = $db->prepare(
+        'UPDATE Contacts
+         SET FirstName = :firstName,
+             LastName = :lastName,
+             `Email Address` = :email,
+             `Phone Number` = :phone
+         WHERE ID = :id AND UserID = :uid'
+    );
+
+    $stmt->execute([
+        ':firstName' => $firstName,
+        ':lastName' => $lastName,
+        ':email' => $email,
+        ':phone' => $phone,
+        ':id' => $contactId,
+        ':uid' => $userId
+    ]);
+
+    respond(200, ['message' => 'Contact updated', 'error' => '']);
+}
+
+
+// DELETE - remove only a contact belonging to the current user
+if ($method === 'DELETE') {
+    $stmt = $db->prepare(
+        'DELETE FROM Contacts WHERE ID = :id AND UserID = :uid'
+    );
+    $stmt->execute([':id' => $contactId, ':uid' => $userId]);
+
+    respond(200, ['message' => 'Contact deleted', 'error' => '']);
+}
+
+
 // Anything else
 respond(405, [
     'error' => 'Method not allowed'
