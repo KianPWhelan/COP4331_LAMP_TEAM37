@@ -5,8 +5,9 @@
 This repository is a PHP/MySQL LAMP application that started as a Colors demo and is being adapted into a Contacts application. Both versions currently exist:
 
 - The legacy Colors flow is still present in `color.html`, `js/code.js`, and `api/index.php`.
-- The newer Contacts page is present in `contacts.html`, `js/contacts.js`, and `api/contacts.php`.
-- Login and registration endpoints have been added as separate files: `api/login.php` and `api/register.php`.
+- The Contacts page is in `contacts.html`, `js/contacts.js`, and `api/contacts.php`.
+- The Admin page is in `admin.html`, `js/admin.js`, and `api/admin.php`.
+- Login and registration use `api/login.php` and `api/register.php`; dashboard logout returns to `index.html` using the existing frontend behavior.
 
 The project is therefore a working foundation with a partially completed Contacts conversion, rather than a fully unified Contacts application.
 
@@ -21,8 +22,9 @@ The project is therefore a working foundation with a partially completed Contact
 
 ### JavaScript
 
-- `js/code.js` contains the original login and Colors CRUD logic. It sends login requests, stores user information in cookies, reads the cookie on the Colors page, and supports adding, searching, and deleting colors.
-- `js/contacts.js` contains the Contacts page logic. It loads contacts, searches contacts, submits new contacts, renders the contact list, and uses a temporary hardcoded test user ID.
+- `js/code.js` sends login requests, stores display information in cookies, and routes Admin users to `admin.html` and Standard Users to `contacts.html`. It also retains legacy Colors CRUD functions.
+- `js/contacts.js` loads and SQL-searches contacts, creates contacts, edits all contact fields except ID, deletes contacts, and renders the current user's contacts. API requests pass the user ID in the existing headers.
+- `js/admin.js` loads and SQL-searches users, disables/enables accounts, changes passwords, creates Admin accounts, and loads/searches contacts belonging to a selected user.
 - `js/register.js` validates matching passwords and sends registration data to `api/register.php`.
 - `js/md5.js` is legacy client-side MD5 code from the original Colors project. The current login endpoint uses PHP password verification instead.
 
@@ -34,9 +36,10 @@ The project is therefore a working foundation with a partially completed Contact
 
 ### Backend API
 
-- `api/login.php` accepts a JSON `POST` containing `login` and `password`. It looks up the user in `Users`, verifies the stored password with `password_verify()`, and returns the user ID, name, login, and role.
-- `api/register.php` accepts a JSON `POST` containing `firstName`, `lastName`, `login`, and `password`. It hashes the password with `password_hash()` and inserts a new `Users` row.
-- `api/contacts.php` is intended to serve the Contacts page. It authenticates using `requireAuth()`, filters contacts by `UserID`, supports listing, searching, and retrieving one contact, and returns contact fields using frontend-friendly names.
+- `api/login.php` accepts JSON credentials, rejects disabled accounts with the same generic failure as invalid credentials, and verifies hashes with `password_verify()`. The frontend stores the returned user ID and role in cookies.
+- `api/register.php` accepts JSON registration data, hashes passwords with `password_hash()`, and creates active Standard User accounts.
+- `api/contacts.php` authenticates through `requireAuth()`, filters contact queries by the supplied user ID, and supports SQL-backed list/search/create/update/delete operations.
+- `api/admin.php` restricts access to active Admins. It supports SQL-backed user search, SQL-backed contact search for any selected user, soft-disable/enable, password changes, and creation of hashed-password Admin accounts. It no longer deletes user rows or contacts.
 - `api/index.php` is the legacy unified Colors API. It contains the old login and Colors list/search/add/update/delete behavior and is not the main endpoint for the new Contacts page.
 - `api/index.php.save` and `api/.index.php.swo` are editor or backup artifacts and are not part of the intended application flow.
 
@@ -44,7 +47,7 @@ The project is therefore a working foundation with a partially completed Contact
 
 - `api/config/db.php` creates a PDO MySQL connection. It reads database settings from environment variables or a `.env` file and falls back to `ContactsAppDB`, `ContactsAppUser`, and local host defaults.
 - `api/config/helpers.php` provides JSON responses, request-body parsing, input cleanup, CORS headers, environment loading, and the `requireAuth()` user-ID lookup.
-- `api/config/resetdb.sql` is still the old Colors database reset script. It creates `ColorsAppDB`, `Users`, and `Colors`, seeds demo users, and creates the old `ColorsAppUser` database account.
+- `api/config/resetdb.sql` is still the old Colors database reset script. It creates `ColorsAppDB`, `Users`, and `Colors`, seeds demo users, and creates the old `ColorsAppUser` database account. Do not run it against the Contacts deployment.
 - `.env` is intentionally excluded from Git and should contain deployment-specific database settings. Do not commit or share its credentials.
 
 ## How the Current Flow Works
@@ -56,7 +59,7 @@ The project is therefore a working foundation with a partially completed Contact
 3. `api/login.php` queries `Users` by `Login`.
 4. The password is checked with `password_verify()`.
 5. On success, the browser stores user information in a cookie.
-6. The current JavaScript redirects to `color.html`, which is still the legacy destination.
+6. The frontend stores returned identity details in cookies and redirects Admins to `admin.html` and Standard Users to `contacts.html`.
 
 ### Registration
 
@@ -69,10 +72,19 @@ The project is therefore a working foundation with a partially completed Contact
 ### Contacts
 
 1. `contacts.html` loads `js/contacts.js`.
-2. The script currently uses a hardcoded test user ID of `1` and sends it in `Authorization` and `X-User-Id` headers.
-3. `api/contacts.php` calls `requireAuth()` to obtain the user ID.
-4. Contact queries use `WHERE UserID = :uid`, so the intended design is to isolate each user's contacts.
-5. The API maps database columns such as `Email Address` and `Phone Number` to `email` and `phone` for the browser.
+2. The browser sends its current user ID in the existing authorization and `X-User-Id` headers.
+3. `api/contacts.php` obtains the user ID with `requireAuth()` and checks that the account is active.
+4. Contact SQL is scoped by `UserID`; search is performed in SQL.
+5. The UI can create, edit, and delete contacts, with update/delete constrained to the identified user's rows.
+6. The API maps database columns such as `Email Address` and `Phone Number` to `email` and `phone` for the browser.
+
+### Admin management
+
+1. Login routes Admin users to `admin.html`.
+2. The Admin UI calls `api/admin.php`; that endpoint checks the identified account for the Admin role and active state.
+3. User and contact searches are sent as query parameters and executed by SQL.
+4. Admin actions update account disabled state, replace password hashes, or create another Admin account.
+5. Disabling preserves both the user row and all their contacts; disabled accounts cannot log in or use authenticated APIs.
 
 ## Intended Database Model
 
@@ -86,6 +98,7 @@ The newer PHP code expects a Contacts-oriented database with at least:
 - `Login`
 - `Password`
 - `Admin`
+- `Disabled` (`0` active, `1` disabled)
 
 ### Contacts
 
@@ -98,38 +111,24 @@ The newer PHP code expects a Contacts-oriented database with at least:
 
 Every contact should point to its owner through `UserID`. The actual deployed database schema must be treated as authoritative; the checked-in `resetdb.sql` still documents the older Colors schema and does not yet match this model.
 
-## Known Incomplete or Conflicting Areas
+## Remaining Deployment and Verification
 
-- Login currently redirects to `color.html` instead of `contacts.html`.
-- `js/contacts.js` searches for an element named `searchText`, while `contacts.html` defines `searchInput`.
-- `js/contacts.js` sends a `POST` request when adding a contact, but `api/contacts.php` currently rejects every method other than `GET`.
-- The Contacts API URL is hardcoded to the deployed webhop address, while login and registration use relative `/api/...` paths. Local and remote testing can therefore behave differently.
-- The Contacts page uses a hardcoded user ID for testing rather than the successful login cookie or a real session.
-- The login endpoint expects `password_hash()` output and a `Admin` column, while the legacy SQL reset script stores plain-text or MD5 sample passwords and does not define `Admin`.
-- `api/config/helpers.php` accepts a numeric user ID from client-controlled headers, cookies, query parameters, or request bodies. This is useful for the course prototype but is not a secure production authentication mechanism.
-- Error handling and success messages on the Contacts page are incomplete. Some failures are only written to the browser console or shown through `alert()`.
-- The legacy Colors files and new Contacts files use different API routes and data models, so the application should eventually choose one consistent flow.
+- Ensure the deployed database has the `Users.Disabled` field, a password column wide enough for PHP password hashes, and the expected `Contacts` schema. The local repo cannot prove the state of the remote database.
+- Confirm a default `root` Admin account exists in the seeded/deployed database and change its initial password immediately. The local repo does not currently seed or verify this account.
+- Verify the droplet serves the app over the configured domain and HTTPS/TLS. Deployment configuration is not included here.
+- Run functional checks against the deployed database for both roles, disabled accounts, contact ownership, contact edit/delete persistence, Admin password changes, Admin creation, and SQL-backed searches.
+- The legacy Colors files and `resetdb.sql` remain in the repository for reference and should not be mistaken for the Contacts deployment path.
+- `requireAuth()` uses the existing client-provided user ID headers/cookies and checks the account's disabled state on API requests. This preserves the existing app flow, but a client-supplied ID is not robust authentication against a malicious client.
 
 ## What Already Exists
 
-- A styled login and registration interface.
-- A registration endpoint with password hashing.
-- A login endpoint with password verification.
-- Shared PDO and JSON helper code.
-- A Contacts dashboard layout.
-- User-scoped contact listing and searching on the backend.
-- A frontend contact form and contact list renderer.
-- A legacy reference implementation for user-scoped Colors CRUD operations.
+- A styled login, registration, contacts, and admin interface.
+- Hashed password registration/login with the existing user-ID cookie/header flow.
+- Frontend redirect logout and disabled-account checks.
+- User-scoped contact list/search/create/update/delete API and UI.
+- Admin user/contact SQL search, account disable/enable, password changes, and Admin creation.
+- A legacy reference implementation for Colors CRUD operations.
 
 ## Remaining Work
 
-The remaining work is primarily integration and verification:
-
-1. Confirm the real deployed database schema and credentials without exposing them in the repository.
-2. Make the login destination and Contacts page the single intended application flow.
-3. Align the Contacts frontend field IDs, API URL, HTTP methods, request payloads, and response shapes.
-4. Add the missing Contacts create, update, and delete behavior to the backend or remove those controls from the UI.
-5. Replace hardcoded test authentication with a consistent authenticated session or token strategy.
-6. Replace or clearly label the outdated `resetdb.sql` file so it does not imply that the old Colors schema is current.
-7. Test registration, login, contact listing, search, add, update, delete, logout, authorization, and error cases against the actual deployment.
-8. Decide whether the legacy Colors application should be removed, retained as a reference, or fully converted.
+Implementation is present locally. Remaining work is to ensure the deployed schema and default root account are in place, rotate the root password, confirm domain/TLS deployment, and run the listed end-to-end tests against the droplet. No deployment database was accessed or modified during this work.

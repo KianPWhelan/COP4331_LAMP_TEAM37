@@ -10,7 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // Read the JSON body
 $body = getRequestBody();
-
 $login    = clean($body['login'] ?? '');
 $password = $body['password'] ?? '';
 
@@ -25,7 +24,7 @@ $db = getDB();
 
 // Find the user by login
 $stmt = $db->prepare(
-    'SELECT ID, FirstName, LastName, Login, Password, Admin
+    'SELECT ID, FirstName, LastName, Login, Password, Admin, Disabled
      FROM Users
      WHERE Login = :login
      LIMIT 1'
@@ -38,7 +37,7 @@ $stmt->execute([
 $user = $stmt->fetch();
 
 // Wrong username or password
-if (!$user || !password_verify($password, $user['Password'])) {
+if (!$user || (int)$user['Disabled'] === 1 || !password_verify($password, $user['Password'])) {
     respond(401, [
         'error' => 'Invalid login or password'
     ]);

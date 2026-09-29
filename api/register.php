@@ -31,8 +31,8 @@ $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
 try {
     $stmt = $db->prepare(
-        'INSERT INTO Users (FirstName, LastName, Login, Password, Admin)
-         VALUES (:firstName, :lastName, :login, :password, :admin)'
+        'INSERT INTO Users (FirstName, LastName, Login, Password, Admin, Disabled)
+         VALUES (:firstName, :lastName, :login, :password, :admin, 0)'
     );
 
     $stmt->execute([

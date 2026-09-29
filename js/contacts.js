@@ -1,4 +1,4 @@
-const contactsUrl = "https://kianwcop4331.webhop.me/api/contacts.php";
+const contactsUrl = "/api/contacts.php";
 
 function getUserId() {
     const userCookie = document.cookie
@@ -16,6 +16,7 @@ function getUserId() {
 }
 
 const userId = getUserId();
+let currentContacts = [];
 
 if (!userId) {
     window.location.href = "index.html";
@@ -138,6 +139,104 @@ function searchContacts() {
     xhr.send();
 }
 
+function editContact(id) {
+    const contact = currentContacts.find(function (item) {
+        return Number(item.id) === Number(id);
+    });
+
+    if (!contact) {
+        return;
+    }
+
+    const editor = document.getElementById("contact-editor-" + id);
+    editor.hidden = false;
+    editor.querySelector("[name='firstName']").value = contact.firstName;
+    editor.querySelector("[name='lastName']").value = contact.lastName;
+    editor.querySelector("[name='email']").value = contact.email;
+    editor.querySelector("[name='phone']").value = contact.phone;
+}
+
+function cancelEdit(id) {
+    const editor = document.getElementById("contact-editor-" + id);
+    if (editor) {
+        editor.hidden = true;
+    }
+}
+
+function saveContact(id) {
+    const editor = document.getElementById("contact-editor-" + id);
+    const values = new FormData(editor);
+    const payload = {
+        firstName: values.get("firstName").trim(),
+        lastName: values.get("lastName").trim(),
+        email: values.get("email").trim(),
+        phone: values.get("phone").trim()
+    };
+
+    if (Object.values(payload).some(function (value) { return !value; })) {
+        alert("Please fill out all contact fields.");
+        return;
+    }
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", contactsUrl + "?id=" + encodeURIComponent(id), true);
+    xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+    xhr.setRequestHeader("Authorization", "Bearer " + userId);
+    xhr.setRequestHeader("X-User-Id", userId);
+    xhr.onreadystatechange = function () {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                loadContacts();
+            } else {
+                showContactError(xhr.responseText, "Failed to update contact.");
+            }
+        }
+    };
+    xhr.send(JSON.stringify(payload));
+}
+
+function deleteContact(id) {
+    if (!confirm("Delete this contact?")) {
+        return;
+    }
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("DELETE", contactsUrl + "?id=" + encodeURIComponent(id), true);
+    xhr.setRequestHeader("Authorization", "Bearer " + userId);
+    xhr.setRequestHeader("X-User-Id", userId);
+    xhr.onreadystatechange = function () {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                loadContacts();
+            } else {
+                showContactError(xhr.responseText, "Failed to delete contact.");
+            }
+        }
+    };
+    xhr.send();
+}
+
+function showContactError(responseText, fallback) {
+    try {
+        const response = JSON.parse(responseText);
+        alert(response.error || fallback);
+    } catch (error) {
+        alert(fallback);
+    }
+}
+
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, function (character) {
+        return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        }[character];
+    });
+}
+
 
 // Render contacts on the page
 function displayContacts(contacts) {
@@ -147,6 +246,7 @@ function displayContacts(contacts) {
         return;
     }
 
+    currentContacts = contacts;
     contactList.innerHTML = "";
 
     if (contacts.length === 0) {
@@ -159,20 +259,36 @@ function displayContacts(contacts) {
     }
 
     contacts.forEach(function (contact) {
+        const id = Number(contact.id);
+        const firstName = escapeHtml(contact.firstName);
+        const lastName = escapeHtml(contact.lastName);
+        const email = escapeHtml(contact.email);
+        const phone = escapeHtml(contact.phone);
+
         contactList.innerHTML += `
-            <div class="border rounded-3 p-3 mb-2">
-                <strong>
-                    ${contact.firstName} ${contact.lastName}
-                </strong>
-
-                <div class="small text-secondary-contrast">
-                    ${contact.phone}
+            <article class="border rounded-3 p-3 mb-2">
+                <div class="d-flex justify-content-between align-items-start gap-3">
+                    <div>
+                        <strong>${firstName} ${lastName}</strong>
+                        <div class="small text-secondary-contrast">${phone}</div>
+                        <div class="small text-secondary-contrast">${email}</div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-light btn-sm" onclick="editContact(${id})">Edit</button>
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteContact(${id})">Delete</button>
+                    </div>
                 </div>
-
-                <div class="small text-secondary-contrast">
-                    ${contact.email}
-                </div>
-            </div>
+                <form id="contact-editor-${id}" class="row g-2 mt-2" hidden onsubmit="event.preventDefault(); saveContact(${id})">
+                    <div class="col-sm-6"><input class="form-control" name="firstName" aria-label="First name" required></div>
+                    <div class="col-sm-6"><input class="form-control" name="lastName" aria-label="Last name" required></div>
+                    <div class="col-sm-6"><input class="form-control" name="email" type="email" aria-label="Email" required></div>
+                    <div class="col-sm-6"><input class="form-control" name="phone" type="tel" aria-label="Phone" required></div>
+                    <div class="col-12 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cancelEdit(${id})">Cancel</button>
+                    </div>
+                </form>
+            </article>
         `;
     });
 }
