@@ -99,10 +99,10 @@ function setUserDisabled(id, disabled) {
 }
 
 function changeUserPassword(id) {
-    const password = prompt("Enter a new password (at least 8 characters):");
+    const password = prompt("Enter a new password:");
     if (password === null) return;
-    if (password.length < 8) {
-        showAdminMessage("Password must be at least 8 characters.", true);
+    if (password === "") {
+        showAdminMessage("Password is required.", true);
         return;
     }
     apiRequest("PUT", adminUrl + "?id=" + encodeURIComponent(id),

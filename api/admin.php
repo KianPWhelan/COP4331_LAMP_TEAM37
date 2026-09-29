@@ -96,8 +96,8 @@ if ($method === 'POST') {
     $login = clean($body['login'] ?? '');
     $password = $body['password'] ?? '';
 
-    if (!$firstName || !$lastName || !$login || !is_string($password) || strlen($password) < 8) {
-        respond(400, ['error' => 'Names, login, and a password of at least 8 characters are required']);
+    if (!$firstName || !$lastName || !$login || !is_string($password) || $password === '') {
+        respond(400, ['error' => 'Names, login, and password are required']);
     }
 
     $stmt = $db->prepare('SELECT 1 FROM Users WHERE Login = :login LIMIT 1');
@@ -153,8 +153,8 @@ if ($method === 'PUT') {
 
     if ($action === 'changePassword') {
         $password = $body['password'] ?? '';
-        if (!is_string($password) || strlen($password) < 8) {
-            respond(400, ['error' => 'Password must be at least 8 characters']);
+        if (!is_string($password) || $password === '') {
+            respond(400, ['error' => 'Password is required']);
         }
 
         $stmt = $db->prepare('UPDATE Users SET Password = :password WHERE ID = :id');
