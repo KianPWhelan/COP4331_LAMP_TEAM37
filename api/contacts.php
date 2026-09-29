@@ -29,17 +29,20 @@ if ($method === 'GET') {
              FROM Contacts
              WHERE UserID = :uid
              AND (
-                FirstName LIKE :q
-                OR LastName LIKE :q
-                OR `Email Address` LIKE :q
-                OR `Phone Number` LIKE :q
+                FirstName LIKE :q1
+                OR LastName LIKE :q2
+                OR `Email Address` LIKE :q3
+                OR `Phone Number` LIKE :q4
              )
              ORDER BY LastName, FirstName'
         );
 
         $stmt->execute([
             ':uid' => $userId,
-            ':q' => $like
+            ':q1' => $like,
+            ':q2' => $like,
+            ':q3' => $like,
+            ':q4' => $like
         ]);
 
         respond(200, [
