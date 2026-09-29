@@ -270,8 +270,8 @@ function displayContacts(contacts) {
                 <div class="d-flex justify-content-between align-items-start gap-3">
                     <div>
                         <strong>${firstName} ${lastName}</strong>
-                        <div class="small text-secondary-contrast">${phone}</div>
-                        <div class="small text-secondary-contrast">${email}</div>
+                        <div class="small text-secondary-contrast"><span class="fw-semibold">Phone Number:</span> ${phone}</div>
+                        <div class="small text-secondary-contrast"><span class="fw-semibold">Email Address:</span> ${email}</div>
                     </div>
                     <div class="d-flex gap-2">
                         <button type="button" class="btn btn-outline-light btn-sm" onclick="editContact(${id})">Edit</button>
@@ -279,10 +279,22 @@ function displayContacts(contacts) {
                     </div>
                 </div>
                 <form id="contact-editor-${id}" class="row g-2 mt-2" hidden onsubmit="event.preventDefault(); saveContact(${id})">
-                    <div class="col-sm-6"><input class="form-control" name="firstName" aria-label="First name" required></div>
-                    <div class="col-sm-6"><input class="form-control" name="lastName" aria-label="Last name" required></div>
-                    <div class="col-sm-6"><input class="form-control" name="email" type="email" aria-label="Email" required></div>
-                    <div class="col-sm-6"><input class="form-control" name="phone" type="tel" aria-label="Phone" required></div>
+                    <div class="col-sm-6">
+                        <label class="form-label small text-uppercase" for="edit-firstName-${id}">First Name</label>
+                        <input id="edit-firstName-${id}" class="form-control" name="firstName" required>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label small text-uppercase" for="edit-lastName-${id}">Last Name</label>
+                        <input id="edit-lastName-${id}" class="form-control" name="lastName" required>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label small text-uppercase" for="edit-phone-${id}">Phone Number</label>
+                        <input id="edit-phone-${id}" class="form-control" name="phone" type="tel" required>
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="form-label small text-uppercase" for="edit-email-${id}">Email Address</label>
+                        <input id="edit-email-${id}" class="form-control" name="email" type="email" required>
+                    </div>
                     <div class="col-12 d-flex gap-2">
                         <button type="submit" class="btn btn-primary btn-sm">Save</button>
                         <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cancelEdit(${id})">Cancel</button>
