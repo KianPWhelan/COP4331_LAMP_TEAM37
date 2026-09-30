@@ -261,7 +261,7 @@ a:hover {
 }
 
 /* Glowing Halloween Create Account button */
-#registerButton, #loginButton {
+#registerButton, #loginButton, #addContactButton, #searchButton{
     box-shadow:
         0 0 8px 3px rgba(255, 190, 70, 1),
         0 0 25px 8px rgba(255, 120, 0, 0.85),
@@ -717,4 +717,28 @@ a:hover {
         transform: translateY(55px);
         opacity: 0;
     }
+}
+
+/* Contacts page ghost positioning */
+.contacts-page .ghost-left {
+    left: 4%;
+    top: 18%;
+}
+
+.contacts-page .ghost-right {
+    right: 4%;
+    top: 18%;
+}
+
+/* Contacts page pumpkin positioning */
+.contacts-page .pumpkin-container-right {
+    right: 5%;
+}
+
+.contacts-page .pumpkin-container-left {
+    left: 0%;
+}
+
+.contacts-page {
+    overflow-x: hidden;
 }
