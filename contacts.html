@@ -12,8 +12,43 @@
     <link href="css/styles.css" rel="stylesheet">
     <script src="js/contacts.js" defer></script>
 </head>
-<body class="py-4 py-md-5">
+<body class="py-4 py-md-5 contacts-page">
+    <!-- Floating ghosts -->
+    <img src="images/ghost.png" class="floating-ghost ghost-left" alt="">
+    <img src="images/ghost.png" class="floating-ghost ghost-right" alt="">
+
+    <!-- Pumpkin images -->
+    <div class="pumpkin-container pumpkin-container-left" aria-hidden="true">
+
+        <div class="pumpkin-eye-glow eye-one"></div>
+        <div class="pumpkin-eye-glow eye-two"></div>
+        <div class="pumpkin-mouth-glow"></div>
+
+        <img src="images/pumpkin-left.png"
+            class="halloween-pumpkin pumpkin-left"
+            alt="">
+    </div>
+
+    <div class="pumpkin-container pumpkin-container-right" aria-hidden="true">
+
+        <div class="pumpkin-eye-glow right-eye-one"></div>
+        <div class="pumpkin-eye-glow right-eye-two"></div>
+        <div class="pumpkin-eye-glow right-nose"></div>
+        <div class="pumpkin-mouth-glow right-mouth"></div>
+
+        <img src="images/pumpkin-right.png"
+            class="halloween-pumpkin pumpkin-right"
+            alt="">
+    </div>
+
+    <!-- Fog -->
+    <div class="fog fog-one" aria-hidden="true"></div>
+    <div class="fog fog-two" aria-hidden="true"></div>        
+    <div class="fog fog-high" aria-hidden="true"></div>
+    <div class="fog fog-high fog-high-two" aria-hidden="true"></div>
+
     <div class="background-glow"></div>
+
     <main class="container">
         <div class="row justify-content-center">
             <div class="col-12 col-lg-10">
@@ -74,7 +109,7 @@
                             </div>
 
                             <div class="d-flex flex-wrap align-items-center gap-3 mt-4">
-                                <button type="button" class="btn btn-primary w-100 py-3 fw-semibold" onclick="addContact()">
+                                <button type="button" id="addContactButton" class="btn btn-primary w-100 py-3 fw-semibold" onclick="addContact()">
                                     <i class="bi bi-plus-circle me-1"></i> Add Contact
                                 </button>
                                 <button type="button" id="clearForm" class="btn btn-outline-secondary px-4 fw-semibold">
