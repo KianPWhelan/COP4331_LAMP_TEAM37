@@ -1,3 +1,7 @@
+###Website no longer up!
+#Droplet was destroyed, this is merely here to preserve the codebase. Thanks for the fun project :)
+
+
 ## AI Assistance Disclosure
 
 ## DATABASE USAGE​
