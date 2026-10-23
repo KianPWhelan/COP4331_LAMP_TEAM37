@@ -67,7 +67,7 @@ main.container {
 }
 
 .text-secondary-contrast {
-    color: var(--text-secondary) !important;
+    color: #ffffff !important;
 }
 
 .form-label-contrast {
@@ -741,4 +741,68 @@ a:hover {
 
 .contacts-page {
     overflow-x: hidden;
+}
+
+/* Grim Reaper delete animation */
+.grim-reaper {
+    position: fixed;
+    width: 180px;
+    height: auto;
+
+    left: calc(100% + 100px);
+    top: 30%;
+    transform: translateY(-50%);
+
+    z-index: 9999;
+    pointer-events: none;
+
+    image-rendering: pixelated;
+    display: none;
+    transition: left 3s linear;
+}
+
+.reaper-test-contact {
+    position: relative;
+    left: 50%;
+    top: 30%;
+
+    width: 420px;
+    padding: 16px;
+    margin-left: -700px;
+
+    background: rgba(20, 20, 25, 0.95);
+    border: 1px solid #666;
+    border-radius: 10px;
+    color: white;
+
+    z-index: 10;
+}
+
+@keyframes disperseOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(1.35);
+        filter: blur(10px);
+    }
+}
+
+.reaper-disperse {
+    animation: disperseOut 1s ease-out forwards;
+}
+
+.btn-outline-light {
+    color: #ffffff;
+    border-color: #ffffff;
+}
+
+.btn-outline-danger {
+    color: #ffffff !important;
+    border-color: #ff6b6b !important;
+    background-color: #8b1e28 !important;
 }

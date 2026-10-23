@@ -195,10 +195,24 @@ function saveContact(id) {
     xhr.send(JSON.stringify(payload));
 }
 
+let reaperAnimationRunning = false;
+
 function deleteContact(id) {
+    if (reaperAnimationRunning) {
+        return;
+    }
+    const contact = document.getElementById(`contact-${id}`);
+    const reaper = document.getElementById("grimReaper");
+
+    const contactRect = contact.getBoundingClientRect();
+
     if (!confirm("Delete this contact?")) {
         return;
     }
+
+    reaperAnimationRunning = true;
+
+    reaper.style.top = `${contactRect.top + contactRect.height / 2}px`;
 
     const xhr = new XMLHttpRequest();
     xhr.open("DELETE", contactsUrl + "?id=" + encodeURIComponent(id), true);
@@ -207,13 +221,95 @@ function deleteContact(id) {
     xhr.onreadystatechange = function () {
         if (this.readyState === 4) {
             if (this.status === 200) {
-                loadContacts();
+                playReaperDeleteAnimation(contact, reaper);
             } else {
+                reaperAnimationRunning = false;
                 showContactError(xhr.responseText, "Failed to delete contact.");
             }
         }
     };
     xhr.send();
+}
+
+function playReaperDeleteAnimation(contact, reaper) {
+    // Prevent scrolling during the animation
+    document.body.style.overflow = "hidden";
+
+    // Find the contact's current position
+    const contactRect = contact.getBoundingClientRect();
+
+    // Reset Reaper
+    reaper.style.display = "block";
+    reaper.style.top = `${contactRect.top + contactRect.height / 2}px`;
+    reaper.style.left = "calc(100% + 100px)";
+    reaper.style.transform = "translateY(-50%)";
+    reaper.src = "images/reaper-approach.png";
+
+    // Start walking toward the contact
+    setTimeout(() => {
+        reaper.style.left = `${contactRect.right - 40}px`;
+    }, 50);
+
+    // Alternate walking frames
+    let walkFrame = false;
+
+    const walkAnimation = setInterval(() => {
+        reaper.src = walkFrame
+            ? "images/reaper-approach.png"
+            : "images/reaper-walk.png";
+
+        walkFrame = !walkFrame;
+    }, 200);
+
+    // Arrives and prepares
+    setTimeout(() => {
+        clearInterval(walkAnimation);
+        reaper.src = "images/reaper-prepare.png";
+    }, 3050);
+
+    // Reap pose
+    setTimeout(() => {
+        reaper.src = "images/reaper-reap.png";
+    }, 3550);
+
+    // Disperse the contact
+    setTimeout(() => {
+        contact.classList.add("reaper-disperse");
+    }, 4000);
+
+    // Turn around and walk away
+    setTimeout(() => {
+        contact.style.visibility = "hidden";
+
+        reaper.style.transform = "translateY(-50%) scaleX(-1)";
+        reaper.style.left = "calc(100% + 100px)";
+
+        let returnWalkFrame = false;
+
+        const returnWalkAnimation = setInterval(() => {
+            reaper.src = returnWalkFrame
+                ? "images/reaper-approach.png"
+                : "images/reaper-walk.png";
+
+            returnWalkFrame = !returnWalkFrame;
+        }, 200);
+
+        setTimeout(() => {
+            clearInterval(returnWalkAnimation);
+        }, 3000);
+
+    }, 5000);
+
+    // Animation finished
+    setTimeout(() => {
+        reaper.style.display = "none";
+        document.body.style.overflow = "";
+
+        reaperAnimationRunning = false;
+
+        // Now refresh the real contacts list
+        loadContacts();
+    }, 8000);
 }
 
 function showContactError(responseText, fallback) {
@@ -241,12 +337,18 @@ function escapeHtml(value) {
 // Render contacts on the page
 function displayContacts(contacts) {
     const contactList = document.getElementById("contactList");
+    const contactCount = document.getElementById("contactCount");
 
     if (!contactList) {
         return;
     }
 
     currentContacts = contacts;
+
+    if (contactCount) {
+        contactCount.textContent = contacts.length;
+    }
+
     contactList.innerHTML = "";
 
     if (contacts.length === 0) {
@@ -266,7 +368,7 @@ function displayContacts(contacts) {
         const phone = escapeHtml(contact.phone);
 
         contactList.innerHTML += `
-            <article class="border rounded-3 p-3 mb-2">
+            <article id="contact-${id}" class="border rounded-3 p-3 mb-2">
                 <div class="d-flex justify-content-between align-items-start gap-3">
                     <div>
                         <strong>${firstName} ${lastName}</strong>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grim Reaper Animation Test</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <div style="height: 1200px;"></div>
+
+    <div id="testContact" class="reaper-test-contact">
+        <strong>John Smith</strong>
+        <div>Phone Number: (555) 123-4567</div>
+        <div>Email Address: john@example.com</div>
+        <button id="testDelete">Delete</button>
+    </div>
+
+    <img id="grimReaper"
+     class="grim-reaper"
+     src="images/reaper-approach.png"
+     alt="">
+
+     <script>
+        const reaper = document.getElementById("grimReaper");
+        const deleteButton = document.getElementById("testDelete");
+        const contact = document.getElementById("testContact");
+
+        deleteButton.addEventListener("click", function () {
+            deleteButton.disabled = true;
+
+            document.body.style.overflow = "hidden";
+
+            const contactRect = contact.getBoundingClientRect();
+
+            reaper.style.top = `${contactRect.top + contactRect.height / 2}px`;
+
+            // Reset
+            contact.style.opacity = "1";
+            contact.style.display = "block";
+            contact.style.transition = "none";
+
+            reaper.style.display = "block";
+            reaper.style.left = "calc(100% + 100px)";
+            reaper.style.transform = "translateY(-50%)";
+            reaper.src = "images/reaper-approach.png";
+
+            // Start walking toward contact
+            setTimeout(() => {
+                reaper.style.left = `${contactRect.right - 40}px`;
+            }, 50);
+
+            // Alternate walking frames
+            let walkFrame = false;
+
+            const walkAnimation = setInterval(() => {
+                reaper.src = walkFrame
+                    ? "images/reaper-approach.png"
+                    : "images/reaper-walk.png";
+
+                walkFrame = !walkFrame;
+            }, 200);
+
+            // 3 seconds: arrives and prepares
+            setTimeout(() => {
+                clearInterval(walkAnimation);
+                reaper.src = "images/reaper-prepare.png";
+            }, 3050);
+
+            // 3.55 seconds: reap pose
+            setTimeout(() => {
+                reaper.src = "images/reaper-reap.png";
+            }, 3550);
+
+            // 4 seconds: NOW contact begins fading
+            setTimeout(() => {
+                contact.classList.add("reaper-disperse");
+            }, 4000);
+
+            // 5 seconds: contact is gone, Reaper turns around
+            // 5 seconds: contact is gone, Reaper turns around
+            setTimeout(() => {
+                contact.style.display = "none";
+
+                reaper.style.transform = "translateY(-50%) scaleX(-1)";
+                reaper.style.left = "calc(100% + 100px)";
+
+                let returnWalkFrame = false;
+
+                const returnWalkAnimation = setInterval(() => {
+                    reaper.src = returnWalkFrame
+                        ? "images/reaper-approach.png"
+                        : "images/reaper-walk.png";
+
+                    returnWalkFrame = !returnWalkFrame;
+                }, 200);
+
+                // Stop the walking frames once he is off screen
+                setTimeout(() => {
+                    clearInterval(returnWalkAnimation);
+                }, 3000);
+
+            }, 5000);
+
+            // 8 seconds: Reaper has left screen
+            setTimeout(() => {
+                reaper.style.display = "none";
+                document.body.style.overflow = "";
+            }, 8000);
+        });
+    </script>
+
+</body>
+</html>
