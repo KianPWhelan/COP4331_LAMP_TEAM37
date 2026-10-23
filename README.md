@@ -28,3 +28,10 @@ This project was developed with assistance from generative AI tools:
 - **Scope**: CSS and styling, frontend behavior, PHP API changes, and debugging for the Contacts application.
 - **Nature of use**: AI was used for explanations on how to edit our php functions, debugging, and generating or editing parts of the styling.
 
+## Asset Credits - Grim Reaper Animation
+- **Asset:** Lil Grim Pet or NPC
+- **Creator:** Tracy
+- **Source:** [OpenGameArt](https://opengameart.org/)
+- **License:** [Creative Commons Attribution 3.0 (CC BY 3.0)](https://creativecommons.org/licenses/by/3.0/)
+- **Usage:** Grim Reaper sprite animation used for the contact deletion feature.
+- **Modifications:** Individual animation frames extracted from the original sprite sheet for use in the website.
